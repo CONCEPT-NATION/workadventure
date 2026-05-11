@@ -53,7 +53,11 @@ const getDefaultConfig = (): JitsiConfig => {
         startWithAudioMuted: !get(requestedMicrophoneState),
         startWithVideoMuted: !get(requestedCameraState),
         prejoinPageEnabled: false,
-        disableDeepLinking: false,
+        // Skip Jitsi Meet's mobile "Open in App" landing page (CONCEPT-NATION patch).
+        // The default page hides the "continue in browser" link below the fold,
+        // which confuses users. Loading Jitsi directly in the iframe is the only
+        // sensible behavior inside WorkAdventure anyway.
+        disableDeepLinking: true,
         gravatar: {
             disabled: true,
         },
