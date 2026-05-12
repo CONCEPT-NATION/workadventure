@@ -199,6 +199,16 @@ export const LivekitRoomPropertyData = PropertyBase.extend({
     livekitRoomAdminTag: z.string().optional(),
 });
 
+export const TeamsMeetingPropertyData = PropertyBase.extend({
+    type: z.literal("teamsMeetingProperty"),
+    meetingUrl: z.string(),
+    displayName: z.string().optional(),
+    closable: z.boolean().optional(),
+    trigger: z.union([z.literal("onenter"), z.literal("onaction"), z.literal("onicon")]).optional(),
+    triggerMessage: z.string().optional(),
+    width: z.number().min(1).max(100).default(50).optional(),
+});
+
 export const MaxUsersInAreaPropertyData = PropertyBase.extend({
     type: z.literal("maxUsersInAreaPropertyData"),
     /**
@@ -235,6 +245,7 @@ export const AreaDataProperty = z.discriminatedUnion("type", [
     MatrixRoomPropertyData,
     TooltipPropertyData,
     LivekitRoomPropertyData,
+    TeamsMeetingPropertyData,
     MaxUsersInAreaPropertyData,
     LockableAreaPropertyData,
 ]);
@@ -266,6 +277,7 @@ export const EntityDataProperty = z.discriminatedUnion("type", [
     OpenFilePropertyData,
     EntityDescriptionPropertyData,
     LivekitRoomPropertyData,
+    TeamsMeetingPropertyData,
 ]);
 
 export const EntityDataProperties = z.array(EntityDataProperty);
@@ -443,7 +455,8 @@ export type EntityDataPropertiesKeys =
     | "playAudio"
     | "openWebsite"
     | "openFile"
-    | "livekitRoomProperty";
+    | "livekitRoomProperty"
+    | "teamsMeetingProperty";
 export type AreaCoordinates = z.infer<typeof AreaCoordinates>;
 export type AreaData = z.infer<typeof AreaData>;
 export type AreaDataProperties = z.infer<typeof AreaDataProperties>;
@@ -459,6 +472,7 @@ export type JitsiRoomConfigData = z.infer<typeof JitsiRoomConfigData>;
 export type LivekitRoomConfigData = z.infer<typeof LivekitRoomConfigData>;
 export type JitsiRoomPropertyData = z.infer<typeof JitsiRoomPropertyData>;
 export type LivekitRoomPropertyData = z.infer<typeof LivekitRoomPropertyData>;
+export type TeamsMeetingPropertyData = z.infer<typeof TeamsMeetingPropertyData>;
 export type PlayAudioPropertyData = z.infer<typeof PlayAudioPropertyData>;
 export type OpenWebsitePropertyData = z.infer<typeof OpenWebsitePropertyData>;
 export type OpenFilePropertyData = z.infer<typeof OpenFilePropertyData>;
@@ -523,6 +537,12 @@ export enum GameMapProperties {
     SPEAKER_MEGAPHONE = "speakerMegaphone",
     START = "start",
     START_LAYER = "startLayer",
+    TEAMS_MEETING = "teamsMeeting",
+    TEAMS_MEETING_URL = "teamsMeetingUrl",
+    TEAMS_MEETING_TRIGGER = "teamsMeetingTrigger",
+    TEAMS_MEETING_TRIGGER_MESSAGE = "teamsMeetingTriggerMessage",
+    TEAMS_MEETING_WIDTH = "teamsMeetingWidth",
+    TEAMS_MEETING_CLOSABLE = "teamsMeetingClosable",
     URL = "url",
     WRITABLE_BY = "writableBy",
     ZONE = "zone",

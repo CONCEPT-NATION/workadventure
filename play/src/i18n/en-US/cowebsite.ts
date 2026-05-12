@@ -6,6 +6,7 @@ const companion: DeepPartial<Translation["cowebsite"]> = {
     close: "Close",
     bigBlueButton: "BigBlueButton",
     jitsi: "Jitsi",
+    teams: "Microsoft Teams",
 };
 
 export default companion;

@@ -480,6 +480,20 @@
     />
 {/if}
 
+{#if property === "teamsMeetingProperty"}
+    <AddPropertyButton
+        headerText="Microsoft Teams"
+        descriptionText="Embed a Microsoft Teams meeting in this area."
+        style={`z-index: 180;${isActive ? "background-color: #4156f6;" : ""}`}
+        {disabled}
+        on:click={(event) => {
+            dispatch("click", event);
+        }}
+        testId="teamsMeetingProperty"
+        img={IconUsersGroup}
+    />
+{/if}
+
 {#if property === "maxUsersInAreaPropertyData"}
     <AddPropertyButton
         headerText={$LL.mapEditor.properties.maxUsersInAreaPropertyData.label()}

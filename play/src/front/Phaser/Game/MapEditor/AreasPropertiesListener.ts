@@ -16,6 +16,7 @@ import type {
     SpeakerMegaphonePropertyData,
     LivekitRoomPropertyData,
     HighlightPropertyData,
+    TeamsMeetingPropertyData,
 } from "@workadventure/map-editor";
 import { PersonalAreaAccessClaimMode } from "@workadventure/map-editor";
 import * as Sentry from "@sentry/svelte";
@@ -61,6 +62,7 @@ import type { CoWebsite } from "../../../WebRtc/CoWebsite/CoWebsite";
 import { getImageCoWebsiteTitle, ImageCoWebsite, isImageCoWebsiteUrl } from "../../../WebRtc/CoWebsite/ImageCoWebsite";
 import { JitsiCoWebsite } from "../../../WebRtc/CoWebsite/JitsiCoWebsite";
 import { SimpleCoWebsite } from "../../../WebRtc/CoWebsite/SimpleCoWebsite";
+import { TeamsCoWebsite } from "../../../WebRtc/CoWebsite/TeamsCoWebsite";
 import { coWebsites } from "../../../Stores/CoWebsiteStore";
 import {
     ON_ACTION_TRIGGER_BUTTON,
@@ -86,6 +88,7 @@ import { userIsConnected } from "../../../Stores/MenuStore";
 import { popupStore } from "../../../Stores/PopupStore";
 import PopupCowebsite from "../../../Components/PopUp/PopupCowebsite.svelte";
 import JitsiPopup from "../../../Components/PopUp/PopUpJitsi.svelte";
+import TeamsPopup from "../../../Components/PopUp/PopUpTeams.svelte";
 import PopUpTab from "../../../Components/PopUp/PopUpTab.svelte";
 import { selectedRoomStore } from "../../../Chat/Stores/SelectRoomStore";
 import FilePopup from "../../../Components/PopUp/FilePopup.svelte";
@@ -387,6 +390,10 @@ export class AreasPropertiesListener {
                 this.handleJitsiRoomPropertyOnEnter(property);
                 break;
             }
+            case "teamsMeetingProperty": {
+                this.handleTeamsMeetingPropertyOnEnter(property);
+                break;
+            }
             case "livekitRoomProperty": {
                 this.handleLivekitRoomPropertyOnEnter(property, abortController.signal).catch((e) => {
                     if (e instanceof AbortError) {
@@ -494,6 +501,12 @@ export class AreasPropertiesListener {
                 newProperty = newProperty as typeof oldProperty;
                 this.handleJitsiRoomPropertyOnLeave(oldProperty);
                 this.handleJitsiRoomPropertyOnEnter(newProperty);
+                break;
+            }
+            case "teamsMeetingProperty": {
+                newProperty = newProperty as typeof oldProperty;
+                this.handleTeamsMeetingPropertyOnLeave();
+                this.handleTeamsMeetingPropertyOnEnter(newProperty);
                 break;
             }
             case "livekitRoomProperty": {
@@ -606,6 +619,10 @@ export class AreasPropertiesListener {
             }
             case "jitsiRoomProperty": {
                 this.handleJitsiRoomPropertyOnLeave(property);
+                break;
+            }
+            case "teamsMeetingProperty": {
+                this.handleTeamsMeetingPropertyOnLeave();
                 break;
             }
             case "livekitRoomProperty": {
@@ -1293,6 +1310,62 @@ export class AreasPropertiesListener {
     private handlePlayAudioPropertyOnUpdate(newProperty: PlayAudioPropertyData): void {
         audioManagerFileStore.unloadAudio();
         audioManagerFileStore.playAudio(newProperty.audioLink, this.scene.getMapUrl(), newProperty.volume);
+    }
+
+    private handleTeamsMeetingPropertyOnEnter(property: TeamsMeetingPropertyData): void {
+        const openTeamsMeetingFunction = () => {
+            if (!property.meetingUrl || property.meetingUrl.trim() === "") {
+                console.warn("Teams meeting property has no meeting URL.");
+                return;
+            }
+
+            let rawUrl = property.meetingUrl.trim();
+            if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
+                rawUrl = `https://${rawUrl}`;
+            }
+
+            let parsedUrl: URL;
+            try {
+                parsedUrl = new URL(rawUrl);
+            } catch (error) {
+                console.error("Invalid Teams meeting URL:", rawUrl, error);
+                return;
+            }
+
+            const coWebsite = new TeamsCoWebsite(
+                parsedUrl,
+                property.width,
+                property.closable,
+                property.displayName
+            );
+
+            coWebsites.add(coWebsite);
+            popupStore.removePopup("teams");
+        };
+
+        const forceTrigger = localUserStore.getForceCowebsiteTrigger();
+        if (forceTrigger || property.trigger === ON_ACTION_TRIGGER_BUTTON) {
+            const message = property.triggerMessage ?? "Press SPACE or touch here to join the Teams meeting";
+
+            popupStore.addPopup(
+                TeamsPopup,
+                {
+                    message: message,
+                    click: () => {
+                        openTeamsMeetingFunction();
+                    },
+                    userInputManager: this.scene.userInputManager,
+                },
+                "teams"
+            );
+        } else {
+            openTeamsMeetingFunction();
+        }
+    }
+
+    private handleTeamsMeetingPropertyOnLeave(): void {
+        popupStore.removePopup("teams");
+        coWebsites.keepOnly((coWebsite) => !(coWebsite instanceof TeamsCoWebsite));
     }
 
     private handleJitsiRoomPropertyOnLeave(property: JitsiRoomPropertyData): void {

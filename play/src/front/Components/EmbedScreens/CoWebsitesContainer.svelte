@@ -5,10 +5,12 @@
     import JitsiCowebsiteComponent from "../Cowebsites/JistiCowebsiteComponent.svelte";
     import SimpleCowebsiteComponent from "../Cowebsites/SimpleCowebsiteComponent.svelte";
     import ImageCowebsiteComponent from "../Cowebsites/ImageCowebsiteComponent.svelte";
+    import TeamsCowebsiteComponent from "../Cowebsites/TeamsCowebsiteComponent.svelte";
     import { ImageCoWebsite } from "../../WebRtc/CoWebsite/ImageCoWebsite";
     import { JitsiCoWebsite } from "../../WebRtc/CoWebsite/JitsiCoWebsite";
     import { SimpleCoWebsite } from "../../WebRtc/CoWebsite/SimpleCoWebsite";
     import { BBBCoWebsite } from "../../WebRtc/CoWebsite/BBBCoWebsite";
+    import { TeamsCoWebsite } from "../../WebRtc/CoWebsite/TeamsCoWebsite";
     import { VideoCoWebsite } from "../../WebRtc/CoWebsite/VideoCoWebsite";
     import BigBlueButtonCowebsiteComponent from "../Cowebsites/BigBlueButtonCowebsiteComponent.svelte";
     import VideoCowebsiteComponent from "../Cowebsites/VideoCowebsiteComponent.svelte";
@@ -275,6 +277,8 @@
             {#each $coWebsites as coWebsite (coWebsite.getId())}
                 {#if coWebsite instanceof JitsiCoWebsite}
                     <JitsiCowebsiteComponent actualCowebsite={coWebsite} visible={coWebsite === activeCowebsite} />
+                {:else if coWebsite instanceof TeamsCoWebsite}
+                    <TeamsCowebsiteComponent actualCowebsite={coWebsite} visible={coWebsite === activeCowebsite} />
                 {:else if coWebsite instanceof BBBCoWebsite}
                     <BigBlueButtonCowebsiteComponent
                         actualCowebsite={coWebsite}

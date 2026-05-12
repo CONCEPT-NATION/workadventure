@@ -726,7 +726,16 @@
                         on:click={() => {
                             onAddProperty("jitsiRoomProperty");
                         }}
-                        disabled={hasLivekitRoomProperty || hasSpeakerMegaphoneProperty || hasListenerMegaphoneProperty}
+                        disabled={hasLivekitRoomProperty || hasSpeakerMegaphoneProperty || hasListenerMegaphoneProperty || hasTeamsMeetingProperty}
+                    />
+                {/if}
+                {#if !hasTeamsMeetingProperty}
+                    <AddPropertyButtonWrapper
+                        property="teamsMeetingProperty"
+                        on:click={() => {
+                            onAddProperty("teamsMeetingProperty");
+                        }}
+                        disabled={hasJitsiRoomProperty || hasLivekitRoomProperty || hasSpeakerMegaphoneProperty || hasListenerMegaphoneProperty}
                     />
                 {/if}
             </div>
